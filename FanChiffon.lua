@@ -59,7 +59,7 @@ local Window = WindUI:CreateWindow({
     Transparent = false,
     Theme = "Dark", -- Set theme to DefaultTheme
     SideBarWidth = 200,
-    -- Background = "rbxassetid://105273285764750",
+    Background = "rbxassetid://105273285764750",
     HasOutline = false,
     ToggleKey = Enum.KeyCode.Insert
 })
