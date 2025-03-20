@@ -10,7 +10,7 @@ getgenv().Settings = {
         ShowTeam = false,
         ShowTracer = false,
         MaxDistance = 1000,
-        RefreshRate = 1/60
+        RefreshRate = 1/240
     },
     
     -- Movement Settings
@@ -59,7 +59,7 @@ local Window = WindUI:CreateWindow({
     Transparent = false,
     Theme = "Light", -- Set theme to DefaultTheme
     SideBarWidth = 200,
-    Background = "rbxassetid://105273285764750",
+    --Background = "rbxassetid://105273285764750",
     HasOutline = false,
     ToggleKey = Enum.KeyCode.Insert
 })
