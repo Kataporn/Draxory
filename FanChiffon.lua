@@ -1,34 +1,4 @@
 repeat wait() until game:IsLoaded() and game.Players and game.Players.LocalPlayer and game.Players.LocalPlayer.Character
-getgenv().Settings = {
-    -- Player ESP Settings
-    ESP = {
-        Enabled = false,
-        ShowBox = false,
-        ShowHealth = false,
-        ShowName = false,
-        ShowDistance = false,
-        ShowTeam = false,
-        ShowTracer = false,
-        MaxDistance = 1000,
-        RefreshRate = 1/240
-    },
-    
-    -- Movement Settings
-    Movement = {
-        WalkSpeed = 50,
-        FlySpeed = 50,
-        TpWalkEnabled = false,
-        NoclipEnabled = false,
-        FlyEnabled = false
-    },
-    
-    -- UI Settings
-    UI = {
-        Theme = "Dark",
-        Transparent = false
-    }
-}
-
 setfpscap(360)
 local WindUI = loadstring(game:HttpGet("https://tree-hub.vercel.app/api/UI/WindUI"))()
 
