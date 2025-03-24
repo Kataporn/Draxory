@@ -1,7 +1,7 @@
 local WindUI = loadstring(game:HttpGet("https://tree-hub.vercel.app/api/UI/WindUI"))()
 
 local Window = WindUI:CreateWindow({
-    Title = "Chiffon",
+    Title = "Chiffon Hub" .. " | ".."Hitbox : Rival".." | ".."[Version 1]",
     Icon = "",
     Author = "",
     Folder = "Chiffon",
@@ -192,104 +192,117 @@ Tabs.General:Keybind({
     
     Tabs.General:Section({ Title = "Hitbox [Risk]" })
 
-    -- Configuration for hitbox modification
-    _G.HitboxSize = 50
-    _G.HitboxEnabled = true
-    _G.ShowVisual = true
+-- Configuration for hitbox modification
+_G.HitboxSize = 50
+_G.HitboxEnabled = true
+_G.ShowVisual = true
+
+-- Create a visual indicator for the hitbox
+local function createVisualHitbox()
+    local visual = Instance.new("Part")
+    visual.Name = "HitboxVisual"
+    visual.Anchored = true
+    visual.CanCollide = false
+    visual.Transparency = 0.5
+    visual.Material = Enum.Material.ForceField
+    visual.Color = Color3.fromRGB(255, 0, 0)
+    visual.Shape = Enum.PartType.Ball
+    return visual
+end
+
+local visualHitbox = createVisualHitbox()
+local connection = nil
+
+local function startHitboxUpdate()
+    if connection then return end
     
-    -- Create a visual indicator for the hitbox
-    local function createVisualHitbox()
-        local visual = Instance.new("Part")
-        visual.Name = "HitboxVisual"
-        visual.Anchored = true
-        visual.CanCollide = false
-        visual.Transparency = 0.5
-        visual.Material = Enum.Material.ForceField
-        visual.Color = Color3.fromRGB(255, 0, 0)
-        visual.Shape = Enum.PartType.Ball
-        return visual
-    end
-    
-    local visualHitbox = createVisualHitbox()
-    local connection = nil
-    
-    local function startHitboxUpdate()
-        if connection then return end
+    connection = game:GetService('RunService').RenderStepped:Connect(function()
+        local Ball = workspace.Football:FindFirstChild("FootBallHitbox")
         
-        connection = game:GetService('RunService').RenderStepped:Connect(function()
-            local Ball = workspace.Football:FindFirstChild("FootBallHitbox")
-            
-            if _G.HitboxEnabled and Ball then
-                pcall(function()
-                    Ball.Size = Vector3.new(_G.HitboxSize, _G.HitboxSize, _G.HitboxSize)
-                    visualHitbox.Size = Ball.Size
-                    visualHitbox.CFrame = Ball.CFrame
-                    visualHitbox.Parent = _G.ShowVisual and workspace or nil
-                end)
-            else
-                visualHitbox.Parent = nil
-            end
-        end)
-    end
-    
-    local function stopHitboxUpdate()
-        if connection then
-            connection:Disconnect()
-            connection = nil
-            
-            -- Reset ball size if it exists
-            local Ball = workspace.Football:FindFirstChild("FootBallHitbox")
-            if Ball then
-                Ball.Size = Vector3.new(1, 1, 1) -- Reset to default size
-            end
-            
-            -- Remove visual
+        if _G.HitboxEnabled and Ball then
+            pcall(function()
+                Ball.Size = Vector3.new(_G.HitboxSize, _G.HitboxSize, _G.HitboxSize)
+                visualHitbox.Size = Ball.Size
+                visualHitbox.CFrame = Ball.CFrame
+                visualHitbox.Parent = _G.ShowVisual and workspace or nil
+            end)
+        else
             visualHitbox.Parent = nil
         end
+    end)
+end
+
+local function stopHitboxUpdate()
+    if connection then
+        connection:Disconnect()
+        connection = nil
+        
+        -- Reset ball size if it exists
+        local Ball = workspace.Football:FindFirstChild("FootBallHitbox")
+        if Ball then
+            Ball.Size = Vector3.new(1, 1, 1) -- Reset to default size
+        end
+        
+        -- Remove visual
+        visualHitbox.Parent = nil
     end
-    
-    -- Store a reference to the toggle
-    local hitboxToggle
-    
-    Tabs.General:Toggle({
-        Title = "Enable Hitbox Extender",
-        Default = true,
-        Callback = function(state)
-            _G.HitboxEnabled = state
-            if state then
-                startHitboxUpdate()
-            else
-                stopHitboxUpdate()
-            end
-            print("Hitbox extender: " .. (state and "Enabled" or "Disabled"))
+end
+
+-- Store references to the toggles
+local hitboxToggle
+local visualToggle
+
+hitboxToggle = Tabs.General:Toggle({
+    Title = "Enable Hitbox Extender",
+    Default = true,
+    Callback = function(state)
+        _G.HitboxEnabled = state
+        if state then
+            startHitboxUpdate()
+        else
+            stopHitboxUpdate()
         end
-    })
-    
-    Tabs.General:Toggle({
-        Title = "Show Hitbox Visual",
-        Default = true,
-        Callback = function(state)
-            _G.ShowVisual = state
-            visualHitbox.Transparency = state and 0.5 or 1
-            print("Hitbox visual: " .. (state and "Visible" or "Hidden"))
-        end
-    })
-    
-    Tabs.General:Slider({
-        Title = "Hitbox Size",
-        Value = {
-            Min = 1,
-            Max = 1000,
-            Default = _G.HitboxSize,
-        },
-        Callback = function(value)
-            _G.HitboxSize = value
-            print("Hitbox size updated to: " .. value)
-        end
-    })
-    
-    -- Start the hitbox update initially
-    startHitboxUpdate()
+        print("Hitbox extender: " .. (state and "Enabled" or "Disabled"))
+    end
+})
+
+visualToggle = Tabs.General:Toggle({
+    Title = "Show Hitbox Visual",
+    Default = true,
+    Callback = function(state)
+        _G.ShowVisual = state
+        visualHitbox.Transparency = state and 0.5 or 1
+        print("Hitbox visual: " .. (state and "Visible" or "Hidden"))
+    end
+})
+
+-- Add keybind for hitbox toggle
+Tabs.General:Keybind({
+    Title = "Hitbox Toggle Keybind",
+    Description = "Press to toggle hitbox extender",
+    Value = "",
+    CanChange = true,
+    Callback = function()
+        _G.HitboxEnabled = not _G.HitboxEnabled
+        hitboxToggle:SetValue(_G.HitboxEnabled)
+    end
+})
+
+Tabs.General:Slider({
+    Title = "Hitbox Size",
+    Value = {
+        Min = 1,
+        Max = 1000,
+        Default = _G.HitboxSize,
+    },
+    Callback = function(value)
+        _G.HitboxSize = value
+        print("Hitbox size updated to: " .. value)
+    end
+})
+
+-- Start the hitbox update initially
+startHitboxUpdate()
     
     -- Main tab elements with consistent styling
     local TpWalkEnabled = false
